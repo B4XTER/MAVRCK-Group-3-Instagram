@@ -17,10 +17,10 @@ Because the source code is relatively old and not maintained, I was not able to 
 Instead I had to use the alternative method listed by the creator, utilizing a clone of the github project and installing via the requirements text file. 
 
 In this Github repo I have included this clone, so all you need to do to install this library is to download my files and adjust this filepath 
-"C:\MAVRCK-Group-3-Instagram\MAVRCK Group 3\igscrape\instagram-scraper-master\requirements.txt" so that it corresponds to the filepath on your computer.
+"C:\MAVRCK-Group-3-Instagram\igscrape\instagram-scraper-master\requirements.txt" so that it corresponds to the filepath on your computer.
 
 In your Anaconda Command Line, enter the following line:
-pip install -r "[WHATEVER YOUR FILEPATH IS]\MAVRCK Group 3\igscrape\instagram-scraper-master\requirements.txt"
+pip install -r "[WHATEVER YOUR FILEPATH IS]\MAVRCK-Group-3-Instagram\igscrape\instagram-scraper-master\requirements.txt"
 
 This should be all you need to install the library onto your machine.
 
