@@ -1,0 +1,103 @@
+#JUPYTER CELL NUMBER 1
+
+import pandas as pd
+#create the dataframe that will store all of our data
+#user, post_link, image_link, post_date, likes, media_type, caption, comments, location, is_ad
+df = pd.DataFrame(columns = ['user', 'post_link', 'image_link', 'post_date', 'likes', 'media_type', 'caption', 'comments', 'location', 'is_ad'])
+
+#this is kept above in case you have to rerun the code
+#this way the data will keep getting reappended without wiping the df
+
+
+
+#JUPYTER CELL NUMBER 2
+
+import random
+import time
+from datetime import datetime
+#follow the instructions in the README for how to install this
+from igramscraper.instagram import Instagram # pylint: disable=no-name-in-module
+
+#make sure you keep the excel file within the same folder that this notebook is in
+instas = pd.read_excel('Image_recog_Initial_sml.xlsx', sheet_name = 'Instagram')
+# If account is public you can query Instagram without auth
+
+instagram = Instagram()
+
+#fill in with your own instagram username and password
+instagram.with_credentials('USERNAME', 'PASSWORD')
+#this will require you to enter the code sent to your email
+instagram.login(two_step_verificator=True)
+
+
+#this bunch of code extracts all of the usernames from the data of all of the stories in the sample data
+print(instas['post_link'][0])
+user_list = []
+for i in range(0,len(instas)):
+    link = instas['post_link'][i]
+    try:
+        link = link[link.index('https://instagram.com/stories/') + len('https://instagram.com/stories/'):]
+        link = link[:link.index('/')]
+        if link not in user_list:
+            user_list.append(link)
+    except:
+        print('there is no post here')
+print(user_list)
+
+
+#if the code breaks down along the way, which happens for no apparent reason, just find where it broke down
+#and replace the '0' in range(0, len(user_list)) with the c value that it broke down on after waiting a few minutes
+for c in range(0, len(user_list)):
+    if True:
+        user = user_list[i]
+        print()
+        print(str(c) + ': '+ str(user))
+        c = c + 1
+        try:
+            #get the 25 most recent 
+            medias = instagram.get_medias(user, 25)
+            for media in medias:
+                #extract post metadata
+                comments = media.comments
+                num_comments = len(comments)
+                long_comment = ''
+                for comment in comments:
+                    long_comment = long_comment + comment.text + '; '
+                image_link = media.image_standard_resolution_url
+                media_link = media.link
+                caption = media.caption
+                location = media.location_name
+                post_date = datetime.utcfromtimestamp(media.created_time).strftime('%Y-%m-%d %H:%M:%S')
+                likes = media.likes_count
+                media_type = media.type
+                is_ad = media.is_ad
+                #add the meta data to the dataframe
+                row = [[user, media_link, image_link, post_date, likes, media_type, caption, long_comment, location, is_ad]]
+                df2 = pd.DataFrame(row, columns = ['user', 'post_link', 'image_link', 'post_date', 'likes', 'media_type', 'caption', 'comments', 'location', 'is_ad'])
+                df = df.append(df2, ignore_index = True)
+                print('row added for ' + str(user) + ' with image: ' + str(post_date))
+        #sometimes this thing just stops working for no apparent reason
+        except Exception as inst:
+            print('*****************************************')
+            print('*****************************************')
+            print('*****************************************')
+            print('BIG OLD ERROR FOR USER: ' + user)
+            print(type(inst))    # the exception instance
+            print(inst.args)     # arguments stored in .args
+            print(inst)
+            print('*****************************************')
+            print('*****************************************')
+            print('*****************************************')
+        #wait between 25 and 35 seconds before starting on the next user
+        rando = random.randrange(-5,5,2)
+        time.sleep(30 + rando)
+    else:
+        print('OOPSIES THERE WAS AN ERROR HERE')
+
+
+
+#JUPYTER CELL NUMBER 3
+
+#run this after getting all of the data you want into the dataframe
+df.to_csv('scraped_insta_data.csv')
+#data will be saved in the same file that this notebook is in
